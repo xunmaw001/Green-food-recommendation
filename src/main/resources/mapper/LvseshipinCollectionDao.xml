@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.LvseshipinCollectionDao">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        a.id as id
+        ,a.lvseshipin_id as lvseshipinId
+        ,a.yonghu_id as yonghuId
+        ,a.lvseshipin_collection_types as lvseshipinCollectionTypes
+        ,a.insert_time as insertTime
+        ,a.create_time as createTime
+    </sql>
+    <select id="selectListView" parameterType="map" resultType="com.entity.view.LvseshipinCollectionView" >
+        SELECT
+        <include refid="Base_Column_List" />
+        <!-- 级联表的字段 -->
+        ,lvseshipin.lvseshipin_name as lvseshipinName
+        ,lvseshipin.lvseshipin_uuid_number as lvseshipinUuidNumber
+        ,lvseshipin.lvseshipin_photo as lvseshipinPhoto
+        ,lvseshipin.zan_number as zanNumber
+        ,lvseshipin.cai_number as caiNumber
+        ,lvseshipin.lvseshipin_types as lvseshipinTypes
+        ,lvseshipin.lvseshipin_new_money as lvseshipinNewMoney
+        ,lvseshipin.lvseshipin_danwei as lvseshipinDanwei
+        ,lvseshipin.lvseshipin_clicknum as lvseshipinClicknum
+        ,lvseshipin.lvseshipin_content as lvseshipinContent
+        ,lvseshipin.shangxia_types as shangxiaTypes
+        ,lvseshipin.lvseshipin_delete as lvseshipinDelete
+        ,yonghu.yonghu_name as yonghuName
+        ,yonghu.yonghu_phone as yonghuPhone
+        ,yonghu.yonghu_id_number as yonghuIdNumber
+        ,yonghu.yonghu_photo as yonghuPhoto
+        ,yonghu.yonghu_email as yonghuEmail
+
+        FROM lvseshipin_collection  a
+        left JOIN lvseshipin lvseshipin ON a.lvseshipin_id = lvseshipin.id
+        left JOIN yonghu yonghu ON a.yonghu_id = yonghu.id
+
+        <where>
+            <if test="params.ids != null">
+                and a.id in
+                <foreach item="item" index="index" collection="params.ids" open="(" separator="," close=")">
+                #{item}
+                </foreach>
+            </if>
+            <if test="params.lvseshipinId != null and params.lvseshipinId != ''">
+                and (
+                    a.lvseshipin_id = #{params.lvseshipinId}
+                )
+            </if>
+            <if test="params.yonghuId != null and params.yonghuId != ''">
+                and (
+                    a.yonghu_id = #{params.yonghuId}
+                )
+            </if>
+            <if test="params.lvseshipinCollectionTypes != null and params.lvseshipinCollectionTypes != ''">
+                and a.lvseshipin_collection_types = #{params.lvseshipinCollectionTypes}
+            </if>
+            <if test=" params.insertTimeStart != '' and params.insertTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.insert_time) >= UNIX_TIMESTAMP(#{params.insertTimeStart}) ]]>
+            </if>
+            <if test=" params.insertTimeEnd != '' and params.insertTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.insert_time) <= UNIX_TIMESTAMP(#{params.insertTimeEnd}) ]]>
+            </if>
+
+                <!-- 判断绿色食品的id不为空 -->
+            <if test=" params.lvseshipinIdNotNull != '' and params.lvseshipinIdNotNull != null and params.lvseshipinIdNotNull != 'null' ">
+                and a.lvseshipin_id IS NOT NULL
+            </if>
+            <if test=" params.lvseshipinName != '' and params.lvseshipinName != null and params.lvseshipinName != 'null' ">
+                and lvseshipin.lvseshipin_name like CONCAT('%',#{params.lvseshipinName},'%')
+            </if>
+            <if test=" params.lvseshipinUuidNumber != '' and params.lvseshipinUuidNumber != null and params.lvseshipinUuidNumber != 'null' ">
+                and lvseshipin.lvseshipin_uuid_number like CONCAT('%',#{params.lvseshipinUuidNumber},'%')
+            </if>
+            <if test="params.zanNumberStart != null  and params.zanNumberStart != '' ">
+                <![CDATA[  and lvseshipin.zan_number >= #{params.zanNumberStart}   ]]>
+            </if>
+            <if test="params.zanNumberEnd != null  and params.zanNumberEnd != '' ">
+                <![CDATA[  and lvseshipin.zan_number <= #{params.zanNumberEnd}   ]]>
+            </if>
+            <if test="params.zanNumber != null  and params.zanNumber != '' ">
+                and lvseshipin.zan_number = #{params.zanNumber}
+            </if>
+            <if test="params.caiNumberStart != null  and params.caiNumberStart != '' ">
+                <![CDATA[  and lvseshipin.cai_number >= #{params.caiNumberStart}   ]]>
+            </if>
+            <if test="params.caiNumberEnd != null  and params.caiNumberEnd != '' ">
+                <![CDATA[  and lvseshipin.cai_number <= #{params.caiNumberEnd}   ]]>
+            </if>
+            <if test="params.caiNumber != null  and params.caiNumber != '' ">
+                and lvseshipin.cai_number = #{params.caiNumber}
+            </if>
+            <if test="params.lvseshipinTypes != null  and params.lvseshipinTypes != ''">
+                and lvseshipin.lvseshipin_types = #{params.lvseshipinTypes}
+            </if>
+
+            <if test="params.lvseshipinNewMoneyStart != null ">
+                <![CDATA[  and lvseshipin.lvseshipin_new_money >= #{params.lvseshipinNewMoneyStart}   ]]>
+            </if>
+            <if test="params.lvseshipinNewMoneyEnd != null ">
+                <![CDATA[  and lvseshipin.lvseshipin_new_money <= #{params.lvseshipinNewMoneyEnd}   ]]>
+            </if>
+            <if test=" params.lvseshipinDanwei != '' and params.lvseshipinDanwei != null and params.lvseshipinDanwei != 'null' ">
+                and lvseshipin.lvseshipin_danwei like CONCAT('%',#{params.lvseshipinDanwei},'%')
+            </if>
+            <if test="params.lvseshipinClicknumStart != null  and params.lvseshipinClicknumStart != '' ">
+                <![CDATA[  and lvseshipin.lvseshipin_clicknum >= #{params.lvseshipinClicknumStart}   ]]>
+            </if>
+            <if test="params.lvseshipinClicknumEnd != null  and params.lvseshipinClicknumEnd != '' ">
+                <![CDATA[  and lvseshipin.lvseshipin_clicknum <= #{params.lvseshipinClicknumEnd}   ]]>
+            </if>
+            <if test="params.lvseshipinClicknum != null  and params.lvseshipinClicknum != '' ">
+                and lvseshipin.lvseshipin_clicknum = #{params.lvseshipinClicknum}
+            </if>
+            <if test=" params.lvseshipinContent != '' and params.lvseshipinContent != null and params.lvseshipinContent != 'null' ">
+                and lvseshipin.lvseshipin_content like CONCAT('%',#{params.lvseshipinContent},'%')
+            </if>
+            <if test="params.shangxiaTypes != null  and params.shangxiaTypes != ''">
+                and lvseshipin.shangxia_types = #{params.shangxiaTypes}
+            </if>
+
+            <if test="params.lvseshipinDeleteStart != null  and params.lvseshipinDeleteStart != '' ">
+                <![CDATA[  and lvseshipin.lvseshipin_delete >= #{params.lvseshipinDeleteStart}   ]]>
+            </if>
+            <if test="params.lvseshipinDeleteEnd != null  and params.lvseshipinDeleteEnd != '' ">
+                <![CDATA[  and lvseshipin.lvseshipin_delete <= #{params.lvseshipinDeleteEnd}   ]]>
+            </if>
+            <if test="params.lvseshipinDelete != null  and params.lvseshipinDelete != '' ">
+                and lvseshipin.lvseshipin_delete = #{params.lvseshipinDelete}
+            </if>
+            <if test=" params.insertTimeStart != '' and params.insertTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(lvseshipin.insert_time) >= UNIX_TIMESTAMP(#{params.insertTimeStart}) ]]>
+            </if>
+            <if test=" params.insertTimeEnd != '' and params.insertTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(lvseshipin.insert_time) <= UNIX_TIMESTAMP(#{params.insertTimeEnd}) ]]>
+            </if>
+                <!-- 判断用户的id不为空 -->
+            <if test=" params.yonghuIdNotNull != '' and params.yonghuIdNotNull != null and params.yonghuIdNotNull != 'null' ">
+                and a.yonghu_id IS NOT NULL
+            </if>
+            <if test=" params.yonghuName != '' and params.yonghuName != null and params.yonghuName != 'null' ">
+                and yonghu.yonghu_name like CONCAT('%',#{params.yonghuName},'%')
+            </if>
+            <if test=" params.yonghuPhone != '' and params.yonghuPhone != null and params.yonghuPhone != 'null' ">
+                and yonghu.yonghu_phone like CONCAT('%',#{params.yonghuPhone},'%')
+            </if>
+            <if test=" params.yonghuIdNumber != '' and params.yonghuIdNumber != null and params.yonghuIdNumber != 'null' ">
+                and yonghu.yonghu_id_number like CONCAT('%',#{params.yonghuIdNumber},'%')
+            </if>
+            <if test=" params.yonghuEmail != '' and params.yonghuEmail != null and params.yonghuEmail != 'null' ">
+                and yonghu.yonghu_email like CONCAT('%',#{params.yonghuEmail},'%')
+            </if>
+        </where>
+        order by a.${params.sort} ${params.order}
+    </select>
+
+</mapper>
